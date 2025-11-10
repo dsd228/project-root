@@ -1,0 +1,16 @@
+/* editor.css */
+:root{ --bg:#071022; --panel:#0f1724; --accent:#4f46e5; --muted:#9aa4b2; --txt:#e6eef6; font-family:Inter,system-ui,Arial; }
+.module-editor{ color:var(--txt); display:flex; flex-direction:column; gap:10px; }
+.editor-top{ display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px; }
+.editor-body{ display:grid; grid-template-columns:260px 1fr 320px; gap:12px; min-height:64vh; }
+.left-panel, .right-panel{ background:var(--panel); padding:12px; border-radius:8px; overflow:auto; }
+.canvas-panel{ display:flex; flex-direction:column; background:transparent; padding:6px; }
+.canvas-wrap{ position:relative; background:#fff; border-radius:8px; padding:12px; display:flex; justify-content:center; align-items:center; border:1px solid rgba(0,0,0,0.08); min-height:520px; }
+#ed-canvas{ display:block; width:100%; height:100%; border-radius:6px; background:#fff; }
+.heat-overlay{ position:absolute; left:12px; top:12px; pointer-events:none; }
+.toolbar{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+.tool{ background:transparent; color:var(--txt); border:1px solid rgba(255,255,255,0.03); padding:8px 10px; border-radius:6px; cursor:pointer; }
+.small{ padding:6px 8px; font-size:13px; }
+.muted{ color:var(--muted); }
+#inspector input, #inspector select, #inspector textarea{ width:100%; margin-top:6px; padding:6px; border-radius:6px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:var(--txt); }
+.component-card{ background:rgba(255,255,255,0.02); padding:8px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }

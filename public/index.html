@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor Pro+ ✨ Premium Design Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Iconos Modernos -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Header Premium -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <i class="ri-palette-line"></i>
+                    </div>
+                    <h1 class="logo">Editor<span class="logo-pro">Pro+</span></h1>
+                    <div class="premium-badge">
+                        <i class="ri-sparkling-2-fill"></i>
+                        PREMIUM
+                    </div>
+                </div>
+                <div class="file-menu">
+                    <button class="menu-btn" id="new-btn">
+                        <i class="ri-file-add-line"></i>
+                        <span>Nuevo</span>
+                    </button>
+                    <button class="menu-btn" id="templates-btn">
+                        <i class="ri-layout-masonry-line"></i>
+                        <span>Plantillas</span>
+                    </button>
+                    <button class="menu-btn" id="save-btn">
+                        <i class="ri-save-3-line"></i>
+                        <span>Guardar</span>
+                    </button>
+                    <button class="menu-btn premium" id="export-btn">
+                        <i class="ri-download-2-line"></i>
+                        <span>Exportar</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="header-center">
+                <!-- Selector de Dispositivo Premium -->
+                <div class="device-selector">
+                    <button class="device-btn active" data-device="desktop">
+                        <i class="ri-computer-line"></i>
+                        <span>Desktop</span>
+                    </button>
+                    <button class="device-btn" data-device="tablet">
+                        <i class="ri-tablet-line"></i>
+                        <span>Tablet</span>
+                    </button>
+                    <button class="device-btn" data-device="mobile">
+                        <i class="ri-smartphone-line"></i>
+                        <span>Mobile</span>
+                    </button>
+                </div>
+                
+                <div class="zoom-controls">
+                    <button class="control-btn" id="zoom-out">
+                        <i class="ri-zoom-out-line"></i>
+                    </button>
+                    <div class="zoom-display">
+                        <span id="zoom-level">100%</span>
+                    </div>
+                    <button class="control-btn" id="zoom-in">
+                        <i class="ri-zoom-in-line"></i>
+                    </button>
+                    <button class="control-btn" id="fit-to-screen">
+                        <i class="ri-fullscreen-line"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <button class="action-btn" id="components-btn">
+                    <i class="ri-box-3-line"></i>
+                    <span>Componentes</span>
+                </button>
+                <button class="action-btn" id="assets-btn">
+                    <i class="ri-image-2-line"></i>
+                    <span>Assets</span>
+                </button>
+                <button class="action-btn primary" id="ai-assistant">
+                    <i class="ri-robot-2-line"></i>
+                    <span>AI Assistant</span>
+                </button>
+                <button class="action-btn premium" id="preview-btn">
+                    <i class="ri-eye-line"></i>
+                    <span>Preview</span>
+                </button>
+                <div class="user-menu">
+                    <button class="user-btn">
+                        <i class="ri-user-3-line"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-container">
+            <!-- Sidebar Izquierdo - Herramientas Premium -->
+            <div class="sidebar left-sidebar">
+                <!-- Sección de Herramientas -->
+                <div class="tool-section">
+                    <div class="section-header">
+                        <h3><i class="ri-tools-line"></i> Herramientas</h3>
+                    </div>
+                    <div class="tool-grid">
+                        <button class="tool-btn active" data-tool="select" title="Seleccionar (V)">
+                            <div class="tool-icon">
+                                <i class="ri-cursor-line"></i>
+                            </div>
+                            <span class="tool-label">Seleccionar</span>
+                            <span class="tool-shortcut">V</span>
+                        </button>
+                        <button class="tool-btn" data-tool="frame" title="Frame (F)">
+                            <div class="tool-icon">
+                                <i class="ri-layout-line"></i>
+                            </div>
+                            <span class="tool-label">Frame</span>
+                            <span class="tool-shortcut">F</span>
+                        </button>
+                        <button class="tool-btn" data-tool="rectangle" title="Rectángulo (R)">
+                            <div class="tool-icon">
+                                <i class="ri-checkbox-blank-line"></i>
+                            </div>
+                            <span class="tool-label">Rectángulo</span>
+                            <span class="tool-shortcut">R</span>
+                        </button>
+                        <button class="tool-btn" data-tool="circle" title="Círculo (O)">
+                            <div class="tool-icon">
+                                <i class="ri-checkbox-blank-circle-line"></i>
+                            </div>
+                            <span class="tool-label">Círculo</span>
+                            <span class="tool-shortcut">O</span>
+                        </button>
+                        <button class="tool-btn" data-tool="text" title="Texto (T)">
+                            <div class="tool-icon">
+                                <i class="ri-text-line"></i>
+                            </div>
+                            <span class="tool-label">Texto</span>
+                            <span class="tool-shortcut">T</span>
+                        </button>
+                        <button class="tool-btn" data-tool="line" title="Línea (L)">
+                            <div class="tool-icon">
+                                <i class="ri-minimize-line"></i>
+                            </div>
+                            <span class="tool-label">Línea</span>
+                            <span class="tool-shortcut">L</span>
+                        </button>
+                        <button class="tool-btn" data-tool="pen" title="Pluma (P)">
+                            <div class="tool-icon">
+                                <i class="ri-edit-2-line"></i>
+                            </div>
+                            <span class="tool-label">Pluma</span>
+                            <span class="tool-shortcut">P</span>
+                        </button>
+                        <button class="tool-btn premium" data-tool="shape" title="Formas (S)">
+                            <div class="tool-icon">
+                                <i class="ri-heart-line"></i>
+                            </div>
+                            <span class="tool-label">Formas</span>
+                            <span class="tool-shortcut">S</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sección de Componentes Rápidos -->
+                <div class="tool-section">
+                    <div class="section-header">
+                        <h3><i class="ri-box-3-line"></i> Componentes</h3>
+                        <button class="icon-btn" id="add-component">
+                            <i class="ri-add-line"></i>
+                        </button>
+                    </div>
+                    <div class="quick-components">
+                        <button class="component-btn" data-component="primary-button">
+                            <div class="component-preview" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);"></div>
+                            <div class="component-info">
+                                <span class="component-name">Botón Primario</span>
+                                <span class="component-type">Button</span>
+                            </div>
+                            <i class="ri-draggable"></i>
+                        </button>
+                        <button class="component-btn" data-component="card-modern">
+                            <div class="component-preview" style="background: linear-gradient(135deg, #10b981, #34d399);"></div>
+                            <div class="component-info">
+                                <span class="component-name">Card Moderno</span>
+                                <span class="component-type">Card</span>
+                            </div>
+                            <i class="ri-draggable"></i>
+                        </button>
+                        <button class="component-btn" data-component="navbar">
+                            <div class="component-preview" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);"></div>
+                            <div class="component-info">
+                                <span class="component-name">Navbar</span>
+                                <span class="component-type">Navigation</span>
+                            </div>
+                            <i class="ri-draggable"></i>
+                        </button>
+                        <button class="component-btn premium" data-component="pricing-card">
+                            <div class="component-preview" style="background: linear-gradient(135deg, #8b5cf6, #a855f7);">
+                                <i class="ri-crown-line"></i>
+                            </div>
+                            <div class="component-info">
+                                <span class="component-name">Pricing Card</span>
+                                <span class="component-type">Premium</span>
+                            </div>
+                            <i class="ri-draggable"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sección de Capas Avanzada -->
+                <div class="tool-section">
+                    <div class="section-header">
+                        <h3><i class="ri-stack-line"></i> Capas</h3>
+                        <div class="layer-actions">
+                            <button class="icon-btn" id="add-layer" title="Nueva capa">
+                                <i class="ri-add-line"></i>
+                            </button>
+                            <button class="icon-btn" id="group-layers" title="Agrupar capas">
+                                <i class="ri-node-tree"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="layers-container">
+                        <div class="layers-toolbar">
+                            <button class="layer-filter active">Todos</button>
+                            <button class="layer-filter">Seleccionados</button>
+                            <button class="layer-filter">Grupos</button>
+                        </div>
+                        <div id="layers-list" class="layers-list">
+                            <!-- Las capas se cargan aquí dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Área de Trabajo Premium -->
+            <div class="workspace">
+                <div class="workspace-header">
+                    <div class="workspace-info">
+                        <div class="project-info">
+                            <span class="project-name">Proyecto Sin Título</span>
+                            <div class="project-status">
+                                <i class="ri-checkbox-circle-line"></i>
+                                <span>Guardado</span>
+                            </div>
+                        </div>
+                        <div class="device-info">
+                            <i class="ri-information-line"></i>
+                            <span id="current-size">1440×1024 - Desktop</span>
+                        </div>
+                    </div>
+                    <div class="workspace-controls">
+                        <div class="view-controls-group">
+                            <button class="control-btn" id="show-grid" title="Mostrar grid (G)">
+                                <i class="ri-grid-line"></i>
+                            </button>
+                            <button class="control-btn" id="show-rulers" title="Mostrar reglas (R)">
+                                <i class="ri-ruler-line"></i>
+                            </button>
+                            <button class="control-btn" id="show-guides" title="Mostrar guías">
+                                <i class="ri-guide-line"></i>
+                            </button>
+                        </div>
+                        <div class="collaboration-status">
+                            <div class="collaborators">
+                                <div class="avatar">A</div>
+                                <div class="avatar">B</div>
+                                <div class="avatar">+2</div>
+                            </div>
+                            <button class="collab-btn">
+                                <i class="ri-share-line"></i>
+                                <span>Compartir</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="canvas-container">
+                    <div class="canvas-controls">
+                        <div class="coordinate-display">
+                            <span>X: <span id="cursor-x">0</span></span>
+                            <span>Y: <span id="cursor-y">0</span></span>
+                        </div>
+                        <div class="history-controls">
+                            <button class="history-btn" id="undo-btn" title="Deshacer (Ctrl+Z)">
+                                <i class="ri-arrow-go-back-line"></i>
+                            </button>
+                            <button class="history-btn" id="redo-btn" title="Rehacer (Ctrl+Y)">
+                                <i class="ri-arrow-go-forward-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="device-frame" id="device-frame">
+                        <div class="device-header">
+                            <div class="device-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <div class="device-url">editorpro.design</div>
+                            <div class="device-actions">
+                                <i class="ri-refresh-line"></i>
+                                <i class="ri-more-2-fill"></i>
+                            </div>
+                        </div>
+                        <div class="device-mockup" id="device-mockup">
+                            <canvas id="main-canvas"></canvas>
+                        </div>
+                        <div class="grid-overlay" id="grid-overlay"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Derecho - Propiedades Premium -->
+            <div class="sidebar right-sidebar">
+                <!-- Panel de Propiedades Avanzado -->
+                <div class="properties-panel">
+                    <div class="section-header">
+                        <h3><i class="ri-settings-3-line"></i> Propiedades</h3>
+                        <button class="icon-btn" id="reset-properties">
+                            <i class="ri-restart-line"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Propiedades de Diseño -->
+                    <div class="property-group">
+                        <div class="property-header">
+                            <i class="ri-layout-line"></i>
+                            <label class="property-label">Diseño</label>
+                        </div>
+                        <div class="property-grid">
+                            <div class="property-field">
+                                <label>Posición X</label>
+                                <div class="input-with-actions">
+                                    <input type="number" id="element-x" value="0">
+                                    <button class="input-action"><i class="ri-lock-line"></i></button>
+                                </div>
+                            </div>
+                            <div class="property-field">
+                                <label>Posición Y</label>
+                                <div class="input-with-actions">
+                                    <input type="number" id="element-y" value="0">
+                                    <button class="input-action"><i class="ri-lock-line"></i></button>
+                                </div>
+                            </div>
+                            <div class="property-field">
+                                <label>Ancho</label>
+                                <div class="input-with-actions">
+                                    <input type="number" id="element-width" value="100">
+                                    <button class="input-action"><i class="ri-link-m"></i></button>
+                                </div>
+                            </div>
+                            <div class="property-field">
+                                <label>Alto</label>
+                                <div class="input-with-actions">
+                                    <input type="number" id="element-height" value="80">
+                                    <button class="input-action"><i class="ri-link-m"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Propiedades de Apariencia -->
+                    <div class="property-group">
+                        <div class="property-header">
+                            <i class="ri-palette-line"></i>
+                            <label class="property-label">Apariencia</label>
+                        </div>
+                        
+                        <div class="property-field">
+                            <label>Fondo</label>
+                            <div class="color-picker-group">
+                                <input type="color" id="fill-color" value="#6366f1">
+                                <div class="color-actions">
+                                    <button class="color-action" title="Gradiente">
+                                        <i class="ri-gradienter-line"></i>
+                                    </button>
+                                    <button class="color-action" title="Transparente">
+                                        <i class="ri-checkbox-blank-line"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="property-row">
+                            <div class="property-field">
+                                <label>Opacidad</label>
+                                <input type="range" id="fill-opacity" min="0" max="1" step="0.1" value="1">
+                                <span class="range-value">100%</span>
+                            </div>
+                            <div class="property-field">
+                                <label>Radio</label>
+                                <input type="number" id="border-radius" value="0" min="0" max="100">
+                            </div>
+                        </div>
+
+                        <div class="property-field">
+                            <label>Borde</label>
+                            <div class="border-controls">
+                                <input type="color" id="stroke-color" value="#000000">
+                                <input type="number" id="stroke-width" value="2" min="0" max="10">
+                                <select id="stroke-style">
+                                    <option value="solid">Sólido</option>
+                                    <option value="dashed">Guiones</option>
+                                    <option value="dotted">Puntos</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Propiedades de Texto -->
+                    <div class="property-group" id="text-properties" style="display: none;">
+                        <div class="property-header">
+                            <i class="ri-text-line"></i>
+                            <label class="property-label">Texto</label>
+                        </div>
+                        <div class="property-field">
+                            <label>Contenido</label>
+                            <textarea id="text-content" placeholder="Escribe tu texto..." rows="3"></textarea>
+                        </div>
+                        <div class="property-grid">
+                            <div class="property-field">
+                                <label>Fuente</label>
+                                <select id="font-family">
+                                    <option value="Inter">Inter</option>
+                                    <option value="SF Pro">SF Pro Display</option>
+                                    <option value="Roboto">Roboto</option>
+                                    <option value="Georgia">Georgia</option>
+                                </select>
+                            </div>
+                            <div class="property-field">
+                                <label>Tamaño</label>
+                                <input type="number" id="font-size" value="16" min="8" max="72">
+                            </div>
+                            <div class="property-field">
+                                <label>Peso</label>
+                                <select id="font-weight">
+                                    <option value="300">Light</option>
+                                    <option value="400">Regular</option>
+                                    <option value="500">Medium</option>
+                                    <option value="600">Semibold</option>
+                                    <option value="700">Bold</option>
+                                </select>
+                            </div>
+                            <div class="property-field">
+                                <label>Alineación</label>
+                                <div class="alignment-buttons">
+                                    <button class="align-btn active"><i class="ri-align-left"></i></button>
+                                    <button class="align-btn"><i class="ri-align-center"></i></button>
+                                    <button class="align-btn"><i class="ri-align-right"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Efectos Premium -->
+                    <div class="property-group premium-feature">
+                        <div class="property-header">
+                            <i class="ri-magic-line"></i>
+                            <label class="property-label">Efectos</label>
+                            <div class="premium-tag">PRO</div>
+                        </div>
+                        <div class="property-field">
+                            <label>Sombra</label>
+                            <div class="shadow-controls">
+                                <input type="color" id="shadow-color" value="#000000">
+                                <input type="number" id="shadow-blur" value="0" min="0" max="50">
+                                <input type="number" id="shadow-offset" value="0" min="0" max="20">
+                            </div>
+                        </div>
+                        <div class="property-field">
+                            <label>Desenfoque</label>
+                            <input type="range" id="blur-effect" min="0" max="20" value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de Assets Premium -->
+                <div class="assets-panel">
+                    <div class="section-header">
+                        <h3><i class="ri-folders-line"></i> Biblioteca</h3>
+                        <button class="icon-btn" id="refresh-assets">
+                            <i class="ri-refresh-line"></i>
+                        </button>
+                    </div>
+                    <div class="assets-tabs">
+                        <button class="asset-tab active" data-tab="components">
+                            <i class="ri-box-3-line"></i>
+                            <span>Componentes</span>
+                        </button>
+                        <button class="asset-tab" data-tab="templates">
+                            <i class="ri-layout-masonry-line"></i>
+                            <span>Plantillas</span>
+                        </button>
+                        <button class="asset-tab premium" data-tab="icons">
+                            <i class="ri-emotion-happy-line"></i>
+                            <span>Iconos</span>
+                        </button>
+                        <button class="asset-tab premium" data-tab="images">
+                            <i class="ri-image-2-line"></i>
+                            <span>Imágenes</span>
+                        </button>
+                    </div>
+                    <div class="assets-content">
+                        <div class="search-box">
+                            <i class="ri-search-line"></i>
+                            <input type="text" placeholder="Buscar componentes...">
+                        </div>
+                        <div class="assets-grid" id="assets-grid">
+                            <!-- Assets se cargan dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Plantillas Premium -->
+        <div id="templates-modal" class="modal">
+            <div class="modal-content large">
+                <div class="modal-header">
+                    <h2><i class="ri-layout-masonry-line"></i> Plantillas Premium</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <div class="modal-tabs">
+                    <button class="tab-btn active" data-category="web">
+                        <i class="ri-computer-line"></i>
+                        <span>Web</span>
+                    </button>
+                    <button class="tab-btn" data-category="mobile">
+                        <i class="ri-smartphone-line"></i>
+                        <span>Mobile</span>
+                    </button>
+                    <button class="tab-btn" data-category="dashboard">
+                        <i class="ri-dashboard-3-line"></i>
+                        <span>Dashboard</span>
+                    </button>
+                    <button class="tab-btn premium" data-category="ecommerce">
+                        <i class="ri-shopping-bag-3-line"></i>
+                        <span>E-commerce</span>
+                    </button>
+                </div>
+                <div class="modal-templates" id="modal-templates">
+                    <!-- Plantillas se cargan aquí -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de IA Avanzado -->
+        <div id="ai-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="ri-robot-2-line"></i> AI Design Assistant</h2>
+                    <div class="ai-status">
+                        <div class="status-dot online"></div>
+                        <span>Conectado</span>
+                    </div>
+                    <span class="close">&times;</span>
+                </div>
+                
+                <div class="ai-features-grid">
+                    <button class="feature-card" data-feature="generate-design">
+                        <div class="feature-icon">
+                            <i class="ri-magic-line"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Generar Diseño</h4>
+                            <p>Crea elementos automáticamente con IA</p>
+                        </div>
+                        <i class="ri-arrow-right-s-line"></i>
+                    </button>
+                    
+                    <button class="feature-card" data-feature="suggest-colors">
+                        <div class="feature-icon">
+                            <i class="ri-palette-line"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Paletas de Color</h4>
+                            <p>Combina colores perfectamente</p>
+                        </div>
+                        <i class="ri-arrow-right-s-line"></i>
+                    </button>
+                    
+                    <button class="feature-card premium" data-feature="auto-layout">
+                        <div class="feature-icon">
+                            <i class="ri-layout-line"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Auto Layout</h4>
+                            <p>Organiza elementos automáticamente</p>
+                        </div>
+                        <i class="ri-arrow-right-s-line"></i>
+                    </button>
+                    
+                    <button class="feature-card premium" data-feature="responsive-design">
+                        <div class="feature-icon">
+                            <i class="ri-responsive-line"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Diseño Responsive</h4>
+                            <p>Adapta a diferentes dispositivos</p>
+                        </div>
+                        <i class="ri-arrow-right-s-line"></i>
+                    </button>
+                </div>
+
+                <div class="ai-chat-section">
+                    <div class="chat-header">
+                        <h3><i class="ri-chat-3-line"></i> Asistente de Diseño</h3>
+                        <button class="clear-chat" id="clear-chat">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                    </div>
+                    <div id="ai-messages" class="ai-messages">
+                        <div class="welcome-message">
+                            <div class="message assistant">
+                                <div class="message-avatar">
+                                    <i class="ri-robot-2-fill"></i>
+                                </div>
+                                <div class="message-content">
+                                    <h4>¡Hola! Soy tu asistente de IA</h4>
+                                    <p>Puedo ayudarte a generar diseños, sugerir colores, optimizar layouts y mucho más. ¿En qué puedo ayudarte?</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ai-input-container">
+                        <div class="input-actions">
+                            <button class="input-action-btn" title="Adjuntar archivo">
+                                <i class="ri-attachment-2"></i>
+                            </button>
+                            <button class="input-action-btn" title="Emojis">
+                                <i class="ri-emotion-happy-line"></i>
+                            </button>
+                        </div>
+                        <input type="text" id="ai-chat-input" placeholder="Describe lo que quieres crear...">
+                        <button id="ai-send" class="send-btn">
+                            <i class="ri-send-plane-2-fill"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Exportación Premium -->
+        <div id="export-modal" class="modal">
+            <div class="modal-content medium">
+                <div class="modal-header">
+                    <h2><i class="ri-download-2-line"></i> Exportar Diseño</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <div class="export-options">
+                    <div class="export-format">
+                        <h4>Formato</h4>
+                        <div class="format-grid">
+                            <label class="format-option">
+                                <input type="radio" name="format" value="png" checked>
+                                <div class="format-card">
+                                    <i class="ri-image-line"></i>
+                                    <span>PNG</span>
+                                </div>
+                            </label>
+                            <label class="format-option">
+                                <input type="radio" name="format" value="svg">
+                                <div class="format-card">
+                                    <i class="ri-file-code-line"></i>
+                                    <span>SVG</span>
+                                </div>
+                            </label>
+                            <label class="format-option premium">
+                                <input type="radio" name="format" value="pdf">
+                                <div class="format-card">
+                                    <i class="ri-file-pdf-line"></i>
+                                    <span>PDF</span>
+                                </div>
+                            </label>
+                            <label class="format-option premium">
+                                <input type="radio" name="format" value="html">
+                                <div class="format-card">
+                                    <i class="ri-html5-line"></i>
+                                    <span>HTML/CSS</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="export-settings">
+                        <h4>Configuración</h4>
+                        <div class="settings-grid">
+                            <div class="setting-field">
+                                <label>Calidad</label>
+                                <input type="range" id="export-quality" min="1" max="100" value="100">
+                                <span>100%</span>
+                            </div>
+                            <div class="setting-field">
+                                <label>Escala</label>
+                                <select id="export-scale">
+                                    <option value="1">1x</option>
+                                    <option value="2">2x</option>
+                                    <option value="3">3x</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="export-preview">
+                        <h4>Vista Previa</h4>
+                        <div class="preview-container" id="export-preview">
+                            <!-- Preview del export -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary">Cancelar</button>
+                    <button class="btn-primary">Exportar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="init-core.js"></script>
+    <script src="enhanced-tools-simple.js"></script>
+    <script src="init-complete-simple.js"></script>
+</body>
+</html>
