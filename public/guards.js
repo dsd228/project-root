@@ -1,23 +1,23 @@
-// Guard para evitar redeclaraciones: sólo crea el global si no existe
+// public/guards.js
+// Evitar redeclaraciones y proporcionar no-op fallbacks
 if (typeof window.DesignAnalytics === 'undefined') {
-  window.DesignAnalytics = (function () {
-    // implementación minimal o wrapper real
-    return {
-      trackPerformanceMetric: function () { /* noop o push a buffer */ },
-      trackEvent: function () { /* noop */ }
-    };
-  })();
+  window.DesignAnalytics = {
+    trackPerformanceMetric: () => {},
+    trackEvent: () => {}
+  };
 } else {
   console.warn('DesignAnalytics already exists - skipping redeclare');
 }
 
 if (typeof window.TemplateManager === 'undefined') {
-  // ejemplo simple; en tu código real reexporta la clase
-  window.TemplateManager = class TemplateManager {
-    constructor() { /* ... */ }
-  };
-} else console.warn('TemplateManager already exists - skip');
+  window.TemplateManager = class TemplateManager { constructor(){ /* stub */ } };
+} else {
+  console.warn('TemplateManager already exists - skipping redeclare');
+}
 
 if (typeof window.EnhancedTools === 'undefined') {
-  window.EnhancedTools = { init: () => { console.warn('EnhancedTools stub'); } };
+  window.EnhancedTools = {
+    init: () => { console.info('EnhancedTools stub'); },
+    // otros métodos no-op si son invocados
+  };
 }
