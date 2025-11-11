@@ -1,21 +1,17 @@
 // init-core.js - Núcleo del Editor corregido y con soporte adicional para herramientas: shape, pen, line, frame, path
 console.log('🚀 Inicializando Editor Pro+ Premium... (init-core con herramientas extendidas)');
 
-// NOTE: Este archivo conserva la mayor parte de la estructura original
-// pero añade soporte mínimo para line, pen (freehand), frame y shape aliases,
-// junto con render para elementos 'line' y 'path'.
+/* 
+  NOTA: Este archivo contiene el EditorApp central con soporte añadido para:
+  - 'shape' (alias rectangle), 'pen' (dibujo libre), 'line', 'frame'
+  - Delegación de imagen/iconos a EnhancedTools si existe (o fallback).
+  Mantén las demás clases managers (TemplateManager, ComponentManager, etc.) de tu versión original.
+*/
 
-/* === Managers (igual que antes, se omiten cambios salvo donde es necesario) */
-
-// ... (mantener clases TemplateManager, ComponentManager, LayerManager, AIAssistant, ResponsiveManager, ExportManager, HistoryManager)
-// Para brevedad aquí asumimos que el contenido original de esos managers permanece. Si estás copiando desde el repo,
-// conserva esas clases tal y como estaban. Aquí sólo incluimos las extensiones relevantes al final de archivo.
-
-
-// (Asegúrate de pegar todo el contenido original de init-core.js para el resto de managers)
-// --- START OF ORIGINAL MANAGERS ---
-// (El contenido original del archivo debe mantenerse arriba tal cual en tu copia local.)
-// --- END OF ORIGINAL MANAGERS ---
+// ----------------- (Asegúrate de conservar las definiciones originales de tus managers aquí) -----------------
+// Si copias/pegas el contenido, conserva las clases TemplateManager, ComponentManager, LayerManager,
+// AIAssistant, ResponsiveManager, ExportManager, HistoryManager, etc., exactamente como en tu repo.
+// -----------------------------------------------------------------------------------------------------------
 
 // ==================== EDITOR APP (extendido) ====================
 class EditorApp {
@@ -35,7 +31,7 @@ class EditorApp {
         this.isDragging = false;
         this.dragStart = { x: 0, y: 0 };
 
-        // Inicializar managers
+        // Inicializar managers (asume que las clases existen en el archivo original)
         this.responsiveManager = new ResponsiveManager(this);
         this.templateManager = new TemplateManager(this);
         this.componentManager = new ComponentManager(this);
@@ -46,6 +42,21 @@ class EditorApp {
 
         // State usado para dibujo libre (pen)
         this._currentPath = null;
+
+        // EnhancedTools (si existe, instanciamos y inicializamos)
+        try {
+            if (typeof window.EnhancedTools === 'function') {
+                this.enhancedTools = new window.EnhancedTools(this);
+                if (typeof this.enhancedTools.init === 'function') {
+                    try { this.enhancedTools.init({ app: this }); } catch (err) { console.warn('enhancedTools.init failed', err); }
+                }
+            } else {
+                this.enhancedTools = null;
+            }
+        } catch (err) {
+            console.warn('Failed to instantiate EnhancedTools', err);
+            this.enhancedTools = null;
+        }
 
         this.init();
     }
@@ -63,7 +74,29 @@ class EditorApp {
         this.setupControlListeners();
         this.setupCanvasListeners();
         this.setupModalListeners();
-        document.addEventListener('keydown', (e) => this.onKeyDown(e));
+
+        // Global keyboard shortcuts (defensivos)
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+I -> Upload Image
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') {
+                e.preventDefault();
+                this.uploadImage();
+                return;
+            }
+            // Ctrl+B -> Enhanced createButton (if available)
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+                e.preventDefault();
+                if (this.enhancedTools && typeof this.enhancedTools.createButton === 'function') {
+                    try { this.enhancedTools.createButton(); } catch (err) { console.warn('createButton failed', err); }
+                } else if (this.componentManager) {
+                    this.componentManager.addComponent('primary-button', 150, 150);
+                }
+                return;
+            }
+
+            // Other editor shortcuts handled elsewhere if needed
+            this.onKeyDown && this.onKeyDown(e);
+        });
     }
 
     setupToolListeners() {
@@ -77,13 +110,20 @@ class EditorApp {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
                 e.currentTarget.classList.add('active');
-                // Normalizar algunos nombres comunes a los que implementamos
+
+                // Normalizar nombres del UI a las implementaciones internas
                 let toolName = e.currentTarget.dataset.tool;
+                if (!toolName) {
+                    console.warn('tool button missing data-tool');
+                    return;
+                }
+                toolName = toolName.toLowerCase();
                 if (toolName === 'shape') toolName = 'rectangle';
-                if (toolName === 'pen') toolName = 'pen';
                 if (toolName === 'pencil') toolName = 'pen';
-                if (toolName === 'line') toolName = 'line';
+                if (toolName === 'pen') toolName = 'pen';
                 if (toolName === 'frame') toolName = 'frame';
+                if (toolName === 'line') toolName = 'line';
+                // fallback: allow direct names that match implementation
                 this.currentTool = toolName;
                 console.log('Herramienta seleccionada:', this.currentTool);
             });
@@ -114,23 +154,22 @@ class EditorApp {
                 break;
             case 'rectangle':
                 this.createRectangle(x, y);
-                this.historyManager.saveState();
+                this.historyManager.saveState && this.historyManager.saveState();
                 break;
             case 'frame':
                 this.createFrame(x, y);
-                this.historyManager.saveState();
+                this.historyManager.saveState && this.historyManager.saveState();
                 break;
             case 'text':
                 this.createText(x, y);
-                this.historyManager.saveState();
+                this.historyManager.saveState && this.historyManager.saveState();
                 break;
             case 'circle':
                 this.createCircle(x, y);
-                this.historyManager.saveState();
+                this.historyManager.saveState && this.historyManager.saveState();
                 break;
             case 'line':
                 this.createLine(x, y);
-                // keep isDrawing true to update x2/y2 on mousemove
                 this.isDrawing = true;
                 break;
             case 'pen':
@@ -147,7 +186,6 @@ class EditorApp {
                 this.isDrawing = true;
                 break;
             default:
-                // no-op for unhandled tools; log for debugging
                 console.log('Tool not handled on mousedown:', this.currentTool);
         }
         this.render();
@@ -160,7 +198,6 @@ class EditorApp {
         const x = (e.clientX - rect.left - this.offset.x) / this.zoom;
         const y = (e.clientY - rect.top - this.offset.y) / this.zoom;
 
-        // If drawing a line or path, update the current element
         if (this.isDrawing && this.selectedElement) {
             if (this.currentTool === 'line' && this.selectedElement.type === 'line') {
                 this.selectedElement.x2 = x;
@@ -168,13 +205,14 @@ class EditorApp {
             } else if (this.currentTool === 'pen' && this.selectedElement.type === 'path') {
                 this.selectedElement.points.push({ x, y });
             } else if (this.currentTool === 'select' && this.selectedElement) {
-                // Move selected element
                 const deltaX = x - this.dragStart.x;
                 const deltaY = y - this.dragStart.y;
-                this.selectedElement.x += deltaX;
+                if (this.selectedElement.x !== undefined) this.selectedElement.x += deltaX;
                 if (this.selectedElement.y !== undefined) this.selectedElement.y += deltaY;
-                // For elements with x1/x2 (lines), move both endpoints
+                // For line endpoints move both
                 if (this.selectedElement.type === 'line') {
+                    this.selectedElement.x1 += deltaX;
+                    this.selectedElement.y1 += deltaY;
                     this.selectedElement.x2 += deltaX;
                     this.selectedElement.y2 += deltaY;
                 }
@@ -189,15 +227,13 @@ class EditorApp {
         if (this.isDrawing) {
             this.isDrawing = false;
             this._currentPath = null;
-            // Save history when finishing drawing
             if (this.historyManager) this.historyManager.saveState();
         } else {
-            // Save state if selection changed
             if (this.historyManager) this.historyManager.saveState();
         }
     }
 
-    // === new creation methods ===
+    // ==================== CREATION HELPERS ====================
     createLine(x, y) {
         const line = {
             id: `line_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -212,7 +248,7 @@ class EditorApp {
         this.elements.push(line);
         this.selectedElement = line;
         this.render();
-        this.updateLayersPanel();
+        this.updateLayersPanel && this.updateLayersPanel();
     }
 
     createFrame(x, y) {
@@ -231,12 +267,13 @@ class EditorApp {
         this.elements.push(frame);
         this.selectedElement = frame;
         this.render();
-        this.updateLayersPanel();
+        this.updateLayersPanel && this.updateLayersPanel();
     }
 
-    // (El resto de métodos createRectangle/createText/createCircle permanecen)
+    // createRectangle/createText/createCircle: usa las implementaciones originales que tenías en el archivo
+    // Asegúrate de mantener las funciones originales y no duplicarlas.
 
-    // ==================== RENDERIZADO (añadimos soporte para 'line' y 'path' y 'frame') ====================
+    // ==================== RENDER / DRAW ====================
     render() {
         if (!this.ctx || !this.canvas) return;
 
@@ -246,20 +283,19 @@ class EditorApp {
         this.ctx.translate(this.offset.x, this.offset.y);
         this.ctx.scale(this.zoom, this.zoom);
 
-        // Renderizar elementos
         this.elements.forEach(element => {
             this.renderElement(element);
         });
 
-        // Renderizar selección
         if (this.selectedElement) {
-            this.renderSelection(this.selectedElement);
+            this.renderSelection && this.renderSelection(this.selectedElement);
         }
 
         this.ctx.restore();
     }
 
     renderElement(element) {
+        if (!element) return;
         this.ctx.save();
 
         const fillColor = element.fill === 'transparent' ? 'transparent' : (element.fill || '#6366f1');
@@ -280,7 +316,6 @@ class EditorApp {
                 break;
 
             case 'frame':
-                // frame: stroke rect and title
                 this.ctx.strokeStyle = element.stroke || '#e2e8f0';
                 this.ctx.lineWidth = element.strokeWidth || 2;
                 this.ctx.strokeRect(element.x, element.y, element.width, element.height);
@@ -327,30 +362,11 @@ class EditorApp {
                 break;
 
             case 'image':
-                // If EnhancedTools available, prefer its renderer
-                if (window.EnhancedTools && typeof window.EnhancedTools === 'function') {
-                    try {
-                        // instantiate temporary fallback to call renderImageElement if provided
-                        if (this.enhancedTools && typeof this.enhancedTools.renderImageElement === 'function') {
-                            this.enhancedTools.renderImageElement(this.ctx, element);
-                        } else {
-                            // fallback: draw if element.src is data URL already loaded
-                            if (element._img && element._img.complete) {
-                                this.ctx.drawImage(element._img, element.x, element.y, element.width || element._img.width, element.height || element._img.height);
-                            } else {
-                                this.ctx.fillStyle = '#e2e8f0';
-                                this.ctx.fillRect(element.x, element.y, element.width || 100, element.height || 60);
-                                this.ctx.fillStyle = '#64748b';
-                                this.ctx.font = '12px Inter';
-                                this.ctx.fillText('Image', element.x + 8, element.y + 20);
-                            }
-                        }
-                    } catch (err) {
-                        console.warn('image render fallback error', err);
-                    }
-                } else {
-                    // simple fallback if no EnhancedTools at all
-                    if (element._img && element._img.complete) {
+                // Prefer enhancedTools rendering if available
+                try {
+                    if (this.enhancedTools && typeof this.enhancedTools.renderImageElement === 'function') {
+                        this.enhancedTools.renderImageElement(this.ctx, element);
+                    } else if (element._img && element._img.complete) {
                         this.ctx.drawImage(element._img, element.x, element.y, element.width || element._img.width, element.height || element._img.height);
                     } else {
                         this.ctx.fillStyle = '#e2e8f0';
@@ -359,19 +375,18 @@ class EditorApp {
                         this.ctx.font = '12px Inter';
                         this.ctx.fillText('Image', element.x + 8, element.y + 20);
                     }
+                } catch (err) {
+                    console.warn('image render error', err);
                 }
                 break;
 
             default:
-                // unknown types -> do nothing
+                // unknown: skip
                 break;
         }
 
         this.ctx.restore();
     }
-
-    // renderSelection, drawRoundedRect, getElementBounds, updateLayersPanel, getLayerIcon etc.
-    // Asegúrate de mantener las implementaciones originales y actualizarlas para incluir 'line', 'path', 'frame' icons.
 
     getLayerIcon(type) {
         const icons = {
@@ -386,10 +401,26 @@ class EditorApp {
         return icons[type] || '📄';
     }
 
-    // El resto del código (updateLayersPanel, showNotification, etc.) puede permanecer igual.
+    // ==================== ENHANCED TOOLS HELPERS ====================
+    uploadImage() {
+        if (this.enhancedTools && typeof this.enhancedTools.openImageUpload === 'function') {
+            try { this.enhancedTools.openImageUpload(); } catch (err) { console.warn('uploadImage failed', err); }
+        } else {
+            // fallback: show notification
+            this.showNotification && this.showNotification('🔍 Upload image feature not available');
+        }
+    }
+
+    insertIcon() {
+        if (this.enhancedTools && typeof this.enhancedTools.openIconLibrary === 'function') {
+            try { this.enhancedTools.openIconLibrary(); } catch (err) { console.warn('insertIcon failed', err); }
+        } else {
+            this.showNotification && this.showNotification('🔍 Icon library not available');
+        }
+    }
 }
 
-// Inicialización (mantener la original pero ahora con soporte a nuevas herramientas)
+// Inicialización (igual que antes)
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🎯 Inicializando Editor Pro+ Premium...');
     try {
