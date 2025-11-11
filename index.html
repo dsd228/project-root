@@ -1,38 +1,95 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Editor Pro+ ✨ Premium Design Tool</title>
-    <link rel="stylesheet" href="public/style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Editor Pro+ — Página de Prueba</title>
+  <style>
+    /* Estilos mínimos para probar la UI */
+    body { font-family: Inter, system-ui, sans-serif; margin: 0; display: flex; height: 100vh; }
+    .sidebar { width: 220px; background:#f8fafc; padding:12px; box-sizing:border-box; border-right:1px solid #e6eef6; overflow:auto; }
+    .workspace { flex:1; display:flex; flex-direction:column; }
+    .toolbar-section { margin-bottom:16px; }
+    .tool-btn, .component-btn, .device-btn { display:flex; align-items:center; gap:8px; padding:8px; border-radius:6px; background:#fff; border:1px solid #e6eef6; cursor:pointer; margin-bottom:8px; }
+    .tool-btn.active { outline:2px solid #6366f1; }
+    .device-frame { padding:12px; display:flex; justify-content:center; align-items:center; height:100%; background:#fff; }
+    #main-canvas { background: #ffffff; width:1000px; height:600px; border:1px solid #e6eef6; display:block; }
+    #layers-list { min-height:80px; background:#fff; border:1px dashed #e6eef6; padding:8px; }
+  </style>
 </head>
 <body>
-    <!-- (rest of your page markup unchanged - header, sidebars, workspace, canvas, properties, etc.) -->
-    <!-- ... paste your existing HTML body content here ... -->
+  <!-- Left sidebar: herramientas mínimas -->
+  <aside class="sidebar">
+    <div class="toolbar-section">
+      <h4>Herramientas</h4>
+      <button class="tool-btn active" data-tool="select">Seleccionar</button>
+      <button class="tool-btn" data-tool="rectangle">Rectángulo</button>
+      <button class="tool-btn" data-tool="circle">Círculo</button>
+      <button class="tool-btn" data-tool="line">Línea</button>
+      <button class="tool-btn" data-tool="pen">Pluma</button>
+      <button class="tool-btn" data-tool="frame">Frame</button>
+      <button class="tool-btn" data-tool="text">Texto</button>
+    </div>
 
-    <!-- IMPORTANT: include only the required scripts (in this order) -->
-    <!-- 1) socket loader: ensures window.io exists (CDN fallback / stub) -->
-    <script src="public/socket-loader.js" defer></script>
+    <div class="toolbar-section">
+      <h4>Componentes</h4>
+      <button class="component-btn" data-component="primary-button">Botón Primario</button>
+      <button class="component-btn" data-component="card-modern">Card</button>
+    </div>
 
-    <!-- 2) small fallbacks that must exist before other init code (Analytics stub, temporary EnhancedTools placeholder) -->
-    <script src="public/init-fallbacks.js" defer></script>
+    <div class="toolbar-section">
+      <h4>Dispositivos</h4>
+      <button class="device-btn active" data-device="desktop">Desktop</button>
+      <button class="device-btn" data-device="mobile">Mobile</button>
+      <button class="device-btn" data-device="tablet">Tablet</button>
+    </div>
 
-    <!-- 3) enhanced-tools fallback (provides methods used by the editor if the real lib is absent) -->
-    <script src="public/enhanced-tools-simple.js" defer></script>
+    <div class="toolbar-section">
+      <h4>Capas</h4>
+      <div id="layers-list">(capas aparecerán aquí)</div>
+    </div>
 
-    <!-- 4) core editor (defines EditorApp and managers) -->
-    <script src="public/init-core.js" defer></script>
+    <div class="toolbar-section">
+      <h4>Atajos</h4>
+      <div>Ctrl+I — subir imagen</div>
+      <div>Ctrl+B — crear botón</div>
+    </div>
+  </aside>
 
-    <!-- 5) final initializer that wires EditorAppFinal / analytics etc. -->
-    <script src="public/init-complete.js" defer></script>
+  <!-- Workspace -->
+  <main class="workspace">
+    <div style="padding:12px; border-bottom:1px solid #e6eef6;">
+      <strong>Proyecto de prueba</strong>
+    </div>
 
-    <!-- OPTIONAL: If you have a real analytics implementation, include it AFTER init-fallbacks.js but BEFORE init-complete.js.
-         Example (uncomment if you actually have public/analytics.js and want it loaded):
-    <script src="public/analytics.js" defer></script>
-    -->
+    <div class="device-frame" id="device-frame" style="flex:1;">
+      <div class="device-mockup" id="device-mockup" style="display:flex; align-items:center; justify-content:center; width:100%;">
+        <canvas id="main-canvas" width="1000" height="600"></canvas>
+      </div>
+    </div>
+  </main>
 
+  <!-- Scripts: carga únicamente los necesarios y en orden -->
+  <!-- 1) socket loader (CDN fallback / stub) -->
+  <script src="public/socket-loader.js"></script>
+
+  <!-- 2) fallbacks mínimos (Analytics stub, placeholder EnhancedTools) -->
+  <script src="public/init-fallbacks.js"></script>
+
+  <!-- 3) enhanced tools fallback (implementa openImageUpload, createButton, renderImageElement, openIconLibrary, createNewFrame, exportFrameAsHTML) -->
+  <script src="public/enhanced-tools-simple.js"></script>
+
+  <!-- 4) core editor (EditorApp y managers) -->
+  <script src="public/init-core.js"></script>
+
+  <!-- 5) final initializer (EditorAppFinal, analytics integration) -->
+  <script src="public/init-complete.js"></script>
+
+  <script>
+    // Quick runtime check and short instructions in console
+    console.log('Index de prueba cargado. Ejecuta en la consola: typeof window.editorApp  y prueba las herramientas.');
+    // Optional: small helper to focus canvas for keyboard shortcuts
+    document.getElementById('main-canvas').tabIndex = 0;
+  </script>
 </body>
 </html>
