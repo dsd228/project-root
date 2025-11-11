@@ -1,0 +1,29 @@
+<script>
+  // Socket stub (solo si io no existe)
+  if (typeof io === 'undefined') {
+    window.io = function () {
+      console.warn('socket.io client not found — using stub');
+      return {
+        on: () => {},
+        emit: () => {},
+        disconnect: () => {}
+      };
+    };
+  }
+
+  // Analytics stub
+  if (!window.Analytics) {
+    window.Analytics = {
+      trackPerformanceMetric: function() { /* noop */ },
+      trackEvent: function() { /* noop */ }
+    };
+  }
+
+  // EnhancedTools stub (si se espera global)
+  if (typeof window.EnhancedTools === 'undefined') {
+    window.EnhancedTools = {
+      init: () => console.info('EnhancedTools stub init'),
+      do: () => {}
+    };
+  }
+</script>
