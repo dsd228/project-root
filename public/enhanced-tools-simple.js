@@ -1,7 +1,6 @@
 // enhanced-tools-simple.js
-// Fallback y utilidades mínimas para EnhancedTools adaptadas a las llamadas que hace init-complete / init-final.
-// Implementa renderImageElement, openImageUpload, createButton, openIconLibrary, createNewFrame, exportFrameAsHTML
-// y algunos helpers para no romper el flujo si la librería real no existe.
+// Fallback and minimal EnhancedTools implementation that exposes the functions init-complete/init-final expect.
+// Provides: renderImageElement, openImageUpload, createButton, openIconLibrary, createNewFrame, exportFrameAsHTML.
 
 (function (global) {
     'use strict';
@@ -10,22 +9,23 @@
         return typeof v === 'function' && (v.prototype && Object.getOwnPropertyNames(v.prototype).length > 1);
     }
 
-    // Si ya existe la librería real, la envolvemos para atrapar errores al construir.
-    if (looksLikeConstructor(global.EnhancedTools)) {
+    if (looksLikeConstructor(global.EnhancedTools) && !global.__ENHANCED_TOOLS_WRAPPED) {
+        // Wrap native implementation to catch constructor errors
         const Native = global.EnhancedTools;
         global.EnhancedTools = function (...args) {
             try {
                 return new Native(...args);
             } catch (err) {
-                console.warn('EnhancedTools native constructor failed, using fallback. Error:', err);
+                console.warn('EnhancedTools native constructor threw — using fallback. Error:', err);
                 return new EnhancedToolsFallback(...args);
             }
         };
         global.EnhancedTools.prototype = Native.prototype;
+        global.__ENHANCED_TOOLS_WRAPPED = true;
         return;
     }
 
-    // Fallback completo
+    // Provide fallback if not present (or if placeholder from init-fallbacks exists)
     console.info('EnhancedTools not found — installing fallback implementation.');
 
     class EnhancedToolsFallback {
@@ -33,14 +33,12 @@
             this.app = app || null;
             this.currentFrame = null;
             this.__isEnhancedToolsFallback = true;
-            this._images = {}; // cache of created images
         }
 
         init() {
             // no-op
         }
 
-        // Render image element: expects element.src or element.dataUrl
         renderImageElement(ctx, element) {
             if (!ctx || !element) return;
             try {
@@ -49,11 +47,7 @@
                     img.crossOrigin = 'anonymous';
                     img.src = element.src;
                     element._img = img;
-                    img.onload = () => {
-                        if (this.app && typeof this.app.render === 'function') {
-                            this.app.render();
-                        }
-                    };
+                    img.onload = () => { if (this.app && typeof this.app.render === 'function') this.app.render(); };
                 }
                 const img = element._img;
                 if (img && img.complete) {
@@ -61,7 +55,6 @@
                     const h = element.height || img.height;
                     ctx.drawImage(img, element.x || 0, element.y || 0, w, h);
                 } else {
-                    // placeholder box while image loads
                     ctx.fillStyle = element.fill || '#e2e8f0';
                     ctx.fillRect(element.x || 0, element.y || 0, element.width || 100, element.height || 60);
                     ctx.fillStyle = '#64748b';
@@ -73,7 +66,6 @@
             }
         }
 
-        // Open simple image upload and create an image element on canvas
         openImageUpload() {
             try {
                 const input = document.createElement('input');
@@ -83,14 +75,10 @@
                 document.body.appendChild(input);
                 input.addEventListener('change', (ev) => {
                     const file = ev.target.files && ev.target.files[0];
-                    if (!file) {
-                        document.body.removeChild(input);
-                        return;
-                    }
+                    if (!file) { document.body.removeChild(input); return; }
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         const dataUrl = e.target.result;
-                        // create image element on the base app
                         if (this.app && this.app.elements) {
                             const el = {
                                 id: `image_${Date.now()}`,
@@ -117,12 +105,11 @@
             }
         }
 
-        // Create a simple button component (rectangle + text)
         createButton() {
             if (!this.app || !this.app.elements) return;
-            const timestamp = Date.now();
+            const t = Date.now();
             const btnRect = {
-                id: `enh_btn_${timestamp}`,
+                id: `enh_btn_${t}`,
                 type: 'rectangle',
                 x: 120,
                 y: 120,
@@ -133,7 +120,7 @@
                 borderRadius: 8
             };
             const btnText = {
-                id: `enh_btn_text_${timestamp}`,
+                id: `enh_btn_text_${t}`,
                 type: 'text',
                 x: btnRect.x + btnRect.width / 2 - 30,
                 y: btnRect.y + btnRect.height / 2 + 5,
@@ -152,11 +139,10 @@
         }
 
         openIconLibrary() {
-            // Simple stub: insert a colored square as an "icon"
             if (!this.app) return;
-            const timestamp = Date.now();
+            const t = Date.now();
             const icon = {
-                id: `icon_${timestamp}`,
+                id: `icon_${t}`,
                 type: 'rectangle',
                 x: 140,
                 y: 140,
@@ -225,7 +211,6 @@
             }
         }
 
-        // Generic event hooks for compatibility
         on() {}
         off() {}
         enable() { return false; }
