@@ -1,66 +1,94 @@
 // enhanced-tools-simple.js
-// Safe wrapper for EnhancedTools: if real library is present, use it.
-// If not, provide a no-op replacement that won't break new EnhancedTools(...) usage.
-// Also ensure any initialization is try/catch protected.
+// Versión adaptada y defensiva para tu proyecto.
+// - Si ya existe una implementación "real" de EnhancedTools la usamos pero la envolvemos para atrapar errores.
+// - Si no existe, exponemos un fallback seguro (no-op) para que `new EnhancedTools()` no rompa la inicialización.
+//
+// Objetivo: evitar el error "EnhancedTools is not a constructor" y que la ausencia/errores de la librería no detengan la app.
 
-(function(global){
+(function (global) {
     'use strict';
 
-    // If a real EnhancedTools already exists and looks like a constructor, keep it.
-    if (typeof global.EnhancedTools === 'function') {
-        // Optionally wrap to protect from constructor errors
-        const NativeET = global.EnhancedTools;
-        global.EnhancedTools = function(...args) {
+    // Helper: detect if value looks like a constructor/class
+    function looksLikeConstructor(v) {
+        return typeof v === 'function' && (v.prototype && Object.getOwnPropertyNames(v.prototype).length > 1);
+    }
+
+    // If a native EnhancedTools exists, wrap it to catch constructor errors.
+    if (looksLikeConstructor(global.EnhancedTools)) {
+        const NativeEnhancedTools = global.EnhancedTools;
+        // Replace with a wrapper factory that attempts to construct native and falls back to noop object on error.
+        global.EnhancedTools = function (...args) {
             try {
-                return new NativeET(...args);
+                // Attempt to use as constructor
+                return new NativeEnhancedTools(...args);
             } catch (err) {
-                console.warn('EnhancedTools constructor threw an error; switching to no-op fallback.', err);
-                // fallback instance
+                console.warn('EnhancedTools native constructor threw an error — using fallback instance. Error:', err);
+                // Return a safe fallback instance
                 return new (class {
-                    constructor(app) { this.app = app; }
+                    constructor(app) { this.app = app || null; this.__isFallback = true; }
                     init() {}
                     enable() {}
                     disable() {}
+                    on() {}
+                    off() {}
+                    getFeatureState() { return {}; }
                 })(...args);
             }
         };
-        // Preserve prototype (helpful for instanceof checks)
-        global.EnhancedTools.prototype = NativeET.prototype;
+        // Keep prototype to preserve instanceof checks as much as possible
+        global.EnhancedTools.prototype = NativeEnhancedTools.prototype;
         return;
     }
 
-    // If not present, expose a friendly no-op class so "new EnhancedTools()" won't crash.
-    console.warn('EnhancedTools not found — installing no-op fallback.');
+    // If no EnhancedTools found, install a full-featured fallback class.
+    console.info('EnhancedTools not found — installing safe fallback implementation.');
+
     class EnhancedToolsFallback {
         constructor(app) {
-            // store reference to app if provided
+            // store reference to the editor app if provided
             this.app = app || null;
-            // mark fallback so code can detect it if needed
+            // marker so other code can detect it's a fallback if needed
             this.__isEnhancedToolsFallback = true;
-            console.info('EnhancedTools fallback instantiated. Enhanced features disabled.');
+            // internal state for features
+            this._features = {};
+            // delay init log for clarity
+            console.info('EnhancedToolsFallback instantiated. Enhanced features are disabled in fallback mode.');
         }
 
+        // Public API (no-ops / safe behaviour)
         init(options) {
-            // no-op initialization
             this.options = options || {};
+            // If the app exposes a notification system, mention it there too
+            if (this.app && typeof this.app.showNotification === 'function') {
+                try {
+                    this.app.showNotification('EnhancedTools not available — running in fallback mode.');
+                } catch (err) {
+                    // ignore notification errors
+                    console.warn('EnhancedToolsFallback: failed to notify app', err);
+                }
+            }
         }
 
         enable(featureName) {
-            // no-op
-            return false;
+            this._features[featureName] = true;
+            return false; // indicate not really enabled
         }
 
         disable(featureName) {
-            // no-op
+            delete this._features[featureName];
             return false;
         }
 
-        // provide a safe stub for any commonly-used methods (add more if needed)
-        on() {}
-        off() {}
+        isEnabled(featureName) {
+            return !!this._features[featureName];
+        }
+
+        on() { /* no-op */ }
+        off() { /* no-op */ }
         getFeatureState() { return {}; }
     }
 
+    // Expose fallback in the global scope.
     global.EnhancedTools = EnhancedToolsFallback;
 
 })(window);
