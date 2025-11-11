@@ -1,25 +1,26 @@
-// Safe fallbacks for optional libraries — include this before the editor initialization scripts.
+// init-fallbacks.js
+// Small defensive fallbacks loaded before other scripts to avoid uncaught errors for optional globals.
 
-if (typeof window.EnhancedTools === 'undefined') {
-    console.warn('EnhancedTools not found — installing no-op fallback.');
-    window.EnhancedTools = class EnhancedTools {
-        constructor(app) {
-            this.app = app;
-            console.warn('Using EnhancedTools no-op fallback. Enhanced features disabled.');
-        }
-        init() { /* no-op */ }
-        // Add no-op methods that your real EnhancedTools uses, e.g.:
-        enable() { /* no-op */ }
-        disable() { /* no-op */ }
-    };
-}
+(function (global) {
+    'use strict';
 
-if (typeof window.Analytics === 'undefined') {
-    console.warn('Analytics not found — installing no-op stub.');
-    window.Analytics = {
-        init: () => { /* no-op */ },
-        trackPerformanceMetric: () => { /* no-op */ },
-        trackEvent: () => { /* no-op */ },
-        identifyUser: () => { /* no-op */ },
-    };
-}
+    if (typeof global.Analytics === 'undefined') {
+        console.warn('Analytics not found — installing no-op stub (init-fallbacks).');
+        global.Analytics = {
+            init: () => {},
+            trackPerformanceMetric: () => {},
+            trackEvent: () => {},
+            identifyUser: () => {}
+        };
+    }
+
+    // If EnhancedTools is not present, a more complete fallback will be installed by enhanced-tools-simple.js.
+    if (typeof global.EnhancedTools === 'undefined') {
+        // Temporary placeholder to avoid immediate constructor errors if something tries to call new EnhancedTools() early.
+        global.EnhancedTools = function () {
+            console.warn('Temporary EnhancedTools placeholder used. Real implementation or fallback will overwrite this.');
+            return {};
+        };
+    }
+
+})(window);
