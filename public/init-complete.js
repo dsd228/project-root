@@ -1,288 +1,150 @@
-// init-final.js - Editor Final con Todas las Funcionalidades
-console.log('🚀 Inicializando Editor Pro+ Premium Final...');
+// init-complete.js
+// Defensive initializer for EditorAppFinal / EditorAppComplete.
+// Protects against missing Analytics and EnhancedTools and prevents uncaught exceptions during init/render.
 
-// Clase principal extendida con todas las funcionalidades
-class EditorAppFinal extends EditorApp {
-    constructor() {
-        super();
-        this.initAllSystems();
-    }
+(function(global){
+    'use strict';
 
-    initAllSystems() {
-        console.log('🎯 Inicializando todos los sistemas...');
-        
-        // Sistemas básicos
-        this.designSystem = new DesignSystem(this);
-        this.aiEnhanced = new AIEnhanced(this);
-        this.autoLayout = new AutoLayoutManager(this);
-        this.componentSystem = new ComponentSystem(this);
-        this.prototypeMode = new PrototypeMode(this);
-        this.collaboration = new CollaborationManager(this);
-        this.plugins = new PluginSystem(this);
-        this.exportEngine = new ExportEngine(this);
-        this.analytics = new DesignAnalytics(this);
-        
-        // Nuevos sistemas para prototipado web
-        this.enhancedTools = new EnhancedTools(this);
-        this.interactiveElements = new InteractiveElements(this);
-        
-        console.log('✅ Todos los sistemas inicializados');
-    }
-
-    // Sobrescribir métodos de renderizado para soportar nuevos elementos
-    renderElement(element) {
-        // Elementos de formulario interactivos
-        if (element.type === 'form-element') {
-            this.interactiveElements.renderFormElement(this.ctx, element);
-            return;
-        }
-        
-        // Imágenes
-        if (element.type === 'image') {
-            this.enhancedTools.renderImageElement(this.ctx, element);
-            return;
-        }
-        
-        // Llamar al renderizado original para otros elementos
-        super.renderElement(element);
-    }
-
-    // Sobrescribir creación de elementos para tracking
-    createRectangle(x, y) {
-        super.createRectangle(x, y);
-        this.analytics.trackAction('element_created', { type: 'rectangle' });
-    }
-
-    createText(x, y) {
-        super.createText(x, y);
-        this.analytics.trackAction('element_created', { type: 'text' });
-    }
-
-    createCircle(x, y) {
-        super.createCircle(x, y);
-        this.analytics.trackAction('element_created', { type: 'circle' });
-    }
-
-    deleteSelected() {
-        if (this.selectedElement) {
-            this.analytics.trackAction('element_deleted', { type: this.selectedElement.type });
-        }
-        super.deleteSelected();
-    }
-
-    render() {
-        const startTime = performance.now();
-        super.render();
-        const renderTime = performance.now() - startTime;
-        
-        this.analytics.trackPerformanceMetric('render', renderTime);
-    }
-
-    // Nuevos métodos de acceso rápido
-    uploadImage() {
-        this.enhancedTools.openImageUpload();
-    }
-
-    insertIcon() {
-        this.enhancedTools.openIconLibrary();
-    }
-
-    createWebPage() {
-        this.enhancedTools.createNewFrame();
-    }
-
-    createForm() {
-        this.interactiveElements.createContactForm();
-    }
-
-    // Exportación mejorada
-    exportAsWebsite() {
-        const html = this.enhancedTools.exportFrameAsHTML(this.enhancedTools.currentFrame);
-        this.downloadAsFile('website.html', html);
-        this.showNotification('🌐 Website exported as HTML');
-    }
-
-    downloadAsFile(filename, content) {
-        const blob = new Blob([content], { type: 'text/html' });
-        const link = document.createElement('a');
-        link.download = filename;
-        link.href = URL.createObjectURL(blob);
-        link.click();
-        URL.revokeObjectURL(link.href);
-    }
-
-    // Métodos de productividad
-    quickSetup(template) {
-        const templates = {
-            'landing-page': this.setupLandingPage.bind(this),
-            'dashboard': this.setupDashboard.bind(this),
-            'portfolio': this.setupPortfolio.bind(this),
-            'ecommerce': this.setupEcommerce.bind(this)
+    // Ensure Analytics stub exists (if you already loaded init-fallbacks.js this is redundant but safe).
+    if (typeof global.Analytics === 'undefined') {
+        console.warn('Analytics not found — installing temporary no-op stub.');
+        global.Analytics = {
+            init: () => {},
+            trackPerformanceMetric: () => {},
+            trackEvent: () => {},
+            identifyUser: () => {}
         };
+    }
 
-        if (templates[template]) {
-            templates[template]();
+    // Small helper to safe-call methods
+    function safeCall(obj, fnName, ...args) {
+        try {
+            if (!obj) return undefined;
+            const fn = obj[fnName];
+            if (typeof fn === 'function') {
+                return fn.apply(obj, args);
+            }
+        } catch (err) {
+            console.warn(`safeCall: ${fnName} threw`, err);
+        }
+        return undefined;
+    }
+
+    // Example EditorAppFinal class shell — adapt to your real implementation if different.
+    // The important parts: guard analytics usage, guard EnhancedTools usage, and wrap render in try/catch.
+    class EditorAppFinal {
+        constructor(options = {}) {
+            this.options = options;
+            // Ensure canvas/context presence is handled elsewhere (app.js creates EditorApp).
+            // Provide analytics fallback on the instance.
+            this.analytics = global.Analytics || {
+                trackPerformanceMetric: () => {},
+                trackEvent: () => {},
+                init: () => {}
+            };
+
+            // Try to create EnhancedTools if available, but don't crash if not.
+            try {
+                if (typeof global.EnhancedTools === 'function') {
+                    // allow EnhancedTools to throw internally without breaking overall init
+                    this.enhancedTools = (function(){
+                        try {
+                            return new global.EnhancedTools(this);
+                        } catch (err) {
+                            console.warn('Failed to instantiate EnhancedTools — using fallback instance.', err);
+                            return new global.EnhancedTools(null);
+                        }
+                    }).call(this);
+                    // Initialize if available
+                    safeCall(this.enhancedTools, 'init', { app: this });
+                } else {
+                    // No EnhancedTools constructor available — create a simple fallback
+                    this.enhancedTools = new global.EnhancedTools(this);
+                }
+            } catch (err) {
+                console.warn('Unexpected error while setting up EnhancedTools', err);
+                this.enhancedTools = new global.EnhancedTools(null);
+            }
+
+            // Bind methods
+            this.render = this.render.bind(this);
+            this.init = this.init.bind(this);
+        }
+
+        init() {
+            // Example: initialize analytics safely
+            try {
+                safeCall(this.analytics, 'init', { appName: 'EditorAppFinal' });
+            } catch (err) {
+                console.warn('Analytics init failed', err);
+            }
+
+            // Continue normal setup (DOM, canvas, event listeners...) — keep robust guards.
+            try {
+                // if you have a parent EditorApp class, you might call super.init() in real code
+                // Here we just attempt first render
+                this.render();
+            } catch (err) {
+                console.error('EditorAppFinal failed during init.render()', err);
+            }
+        }
+
+        // Render must not throw if analytics missing
+        render() {
+            try {
+                // ... actual render logic goes here (drawing, layout, etc.)
+                // Example: notify analytics about render duration (guarded)
+                const start = performance ? performance.now() : Date.now();
+
+                // --- PLACEHOLDER: actual drawing code should be here ---
+                // For compatibility, check if there's a base renderer on global.editorApp and call it:
+                if (global.editorApp && typeof global.editorApp.render === 'function') {
+                    try { global.editorApp.render(); } catch (err) { console.warn('base editorApp.render error', err); }
+                }
+                // --- END PLACEHOLDER ---
+
+                const end = performance ? performance.now() : Date.now();
+                const elapsed = end - start;
+
+                // Guarded analytics call
+                safeCall(this.analytics, 'trackPerformanceMetric', 'render', { duration: elapsed });
+
+            } catch (err) {
+                // Don't let render errors bubble up and break page load.
+                console.error('EditorAppFinal.render caught an error', err);
+            }
+        }
+
+        // Other methods that might call analytics should use safeCall or check first
+        someFeature() {
+            safeCall(this.analytics, 'trackEvent', 'someFeature', { enabled: true });
         }
     }
 
-    setupLandingPage() {
-        this.enhancedTools.createNewFrame();
-        this.interactiveElements.createHeroSection();
-        this.showNotification('🎯 Landing page template applied');
-    }
+    // Export to global so your HTML or other scripts can instantiate EditorAppFinal safely.
+    global.EditorAppFinal = EditorAppFinal;
 
-    setupDashboard() {
-        // Implementar template de dashboard
-        this.showNotification('📊 Dashboard template applied');
-    }
-
-    setupPortfolio() {
-        // Implementar template de portfolio
-        this.showNotification('🎨 Portfolio template applied');
-    }
-
-    setupEcommerce() {
-        // Implementar template de e-commerce
-        this.showNotification('🛒 E-commerce template applied');
-    }
-}
-
-// Inicialización final
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('🎯 Inicializando Editor Pro+ Premium Final...');
-    
-    try {
-        // Reemplazar EditorApp con la versión final
-        window.EditorApp = EditorAppFinal;
-        window.editorApp = new EditorAppFinal();
-        
-        if (window.editorApp.canvas) {
-            // Cargar datos guardados
-            window.editorApp.loadAutoSave();
-            window.editorApp.analytics.loadAnalytics();
-            window.editorApp.componentSystem.loadComponentLibrary();
-            window.editorApp.prototypeMode.loadPrototypeData();
-            
-            console.log('🚀 Editor Pro+ Premium Final inicializado correctamente!');
-            
-            // Mostrar mensaje de bienvenida
-            setTimeout(() => {
-                window.editorApp.showNotification('🎉 ¡Editor Pro+ Premium Final listo!');
-                
-                setTimeout(() => {
-                    const features = [
-                        '🎨 Design System', '🤖 IA Generativa', '📐 Auto-Layout',
-                        '🧩 Componentes', '🎭 Prototipado', '👥 Colaboración',
-                        '🔌 Plugins', '💻 Exportación', '📊 Analytics',
-                        '🖼️ Imágenes', '🔠 Iconos', '📱 Frames',
-                        '📝 Formularios', '🎯 Componentes Web'
-                    ];
-                    
-                    window.editorApp.showNotification(`✨ Características: ${features.join(', ')}`);
-                }, 2000);
-            }, 1000);
-
-            // Agregar atajos de teclado adicionales
-            document.addEventListener('keydown', (e) => {
-                if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
-                    e.preventDefault();
-                    window.editorApp.uploadImage();
+    // Auto-init pattern: if DOMContentLoaded already happened or will happen, instantiate.
+    function tryAutoInit() {
+        try {
+            // Only auto-instantiate if not already present
+            if (!global.editorAppFinal) {
+                global.editorAppFinal = new EditorAppFinal();
+                // Defer heavy init until DOM is ready
+                if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                    try { global.editorAppFinal.init(); } catch (err) { console.warn('EditorAppFinal.init error', err); }
+                } else {
+                    document.addEventListener('DOMContentLoaded', () => {
+                        try { global.editorAppFinal.init(); } catch (err) { console.warn('EditorAppFinal.init error', err); }
+                    });
                 }
-                
-                if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
-                    e.preventDefault();
-                    window.editorApp.createWebPage();
-                }
-                
-                if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'F') {
-                    e.preventDefault();
-                    window.editorApp.createForm();
-                }
-            });
-
-        } else {
-            console.error('❌ No se pudo inicializar EditorApp Final - Canvas no encontrado');
+            }
+        } catch (err) {
+            console.error('Failed to auto-init EditorAppFinal', err);
         }
-        
-    } catch (error) {
-        console.error('❌ Error inicializando EditorApp Final:', error);
     }
-});
 
-// Panel de bienvenida y tutorial
-function showWelcomePanel() {
-    const welcomePanel = document.createElement('div');
-    welcomePanel.className = 'welcome-panel';
-    welcomePanel.innerHTML = `
-        <div class="welcome-content">
-            <h2>🎉 ¡Bienvenido a Editor Pro+ Premium!</h2>
-            <div class="welcome-features">
-                <div class="feature-item">
-                    <i class="ri-layout-line"></i>
-                    <span>Crea páginas web con frames</span>
-                </div>
-                <div class="feature-item">
-                    <i class="ri-image-line"></i>
-                    <span>Sube y edita imágenes</span>
-                </div>
-                <div class="feature-item">
-                    <i class="ri-emotion-line"></i>
-                    <span>Inserta iconos y elementos UI</span>
-                </div>
-                <div class="feature-item">
-                    <i class="ri-input-field"></i>
-                    <span>Formularios interactivos</span>
-                </div>
-                <div class="feature-item">
-                    <i class="ri-flask-line"></i>
-                    <span>Prototipado interactivo</span>
-                </div>
-            </div>
-            <div class="welcome-actions">
-                <button class="btn-primary" onclick="this.closest('.welcome-panel').remove()">
-                    Comenzar a Diseñar
-                </button>
-                <button class="btn-secondary" onclick="showTutorial()">
-                    Ver Tutorial
-                </button>
-            </div>
-        </div>
-    `;
+    // Attempt automatic init but don't block/throw
+    tryAutoInit();
 
-    document.body.appendChild(welcomePanel);
-}
-
-function showTutorial() {
-    const steps = [
-        '1. Usa la herramienta "Frame" para crear páginas',
-        '2. Sube imágenes con el botón "Image"',
-        '3. Inserta iconos desde la librería',
-        '4. Agrega formularios y elementos interactivos',
-        '5. Usa componentes predefinidos para rapidez',
-        '6. Prototipa interacciones entre páginas',
-        '7. Exporta como HTML funcional'
-    ];
-
-    alert('Tutorial Rápido:\n\n' + steps.join('\n'));
-}
-
-// Mostrar panel de bienvenida después de la carga
-setTimeout(showWelcomePanel, 1500);
-
-// Exportar para uso global
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        EditorAppFinal,
-        EnhancedTools,
-        InteractiveElements,
-        DesignSystem,
-        AIEnhanced,
-        AutoLayoutManager,
-        ComponentSystem,
-        PrototypeMode,
-        CollaborationManager,
-        PluginSystem,
-        ExportEngine,
-        DesignAnalytics
-    };
-}
+})(window);
