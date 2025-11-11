@@ -19,6 +19,13 @@ class EditorApp {
         this.aiAssistant = new AIAssistant(this);
         this.layerManager = new LayerManager(this);
         
+        // Defensive analytics fallback: asegura que this.analytics exista aún si no se cargó la librería Analytics.
+        this.analytics = window.Analytics || {
+            trackPerformanceMetric: () => {},
+            trackEvent: () => {},
+            init: () => {}
+        };
+        
         this.init();
     }
 
