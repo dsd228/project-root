@@ -339,7 +339,23 @@ class EditorApp {
         this.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e));
         this.canvas.addEventListener('mouseup', () => this.onMouseUp());
         this.canvas.addEventListener('mouseleave', () => this.onMouseUp());
-        this.canvas.addEventListener('wheel', (e) => this.onWheel(e));
+
+        // Attach wheel handler: ensure the method exists (we implement onWheel below)
+        this.canvas.addEventListener('wheel', (e) => {
+            // call defensively
+            if (typeof this.onWheel === 'function') {
+                this.onWheel(e);
+            } else {
+                // fallback: simple zoom behavior (defensive)
+                try {
+                    e.preventDefault();
+                    const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+                    this.setZoom(this.zoom * zoomFactor);
+                } catch (err) {
+                    console.warn('wheel fallback failed', err);
+                }
+            }
+        });
     }
 
     setupModalListeners() {
@@ -399,6 +415,17 @@ class EditorApp {
         if (this.isDrawing) { this.isDrawing = false; this._currentPath = null; this.historyManager.saveState && this.historyManager.saveState(); } else { this.historyManager.saveState && this.historyManager.saveState(); }
     }
 
+    // ADD: onWheel handler (fixes "this.onWheel is not a function")
+    onWheel(e) {
+        try {
+            e.preventDefault();
+            const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+            this.setZoom(this.zoom * zoomFactor);
+        } catch (err) {
+            console.warn('onWheel handler failed', err);
+        }
+    }
+
     createLine(x, y) {
         const line = { id: `line_${Date.now()}`, type: 'line', x1: x, y1: y, x2: x + 100, y2: y, stroke: '#000', strokeWidth: 2 };
         this.elements.push(line); this.selectedElement = line; this.render(); this.updateLayersPanel && this.updateLayersPanel();
@@ -438,10 +465,10 @@ class EditorApp {
             case 'rectangle': case 'frame': return x >= el.x && x <= el.x + el.width && y >= el.y && y <= el.y + el.height;
             case 'circle': const d = Math.sqrt((x - el.x) ** 2 + (y - el.y) ** 2); return d <= el.radius;
             case 'text': return x >= el.x && x <= el.x + 100 && y >= el.y - 20 && y <= el.y;
-            case 'line': // simple bounding box for line selection
+            case 'line':
                 const minX = Math.min(el.x1, el.x2), maxX = Math.max(el.x1, el.x2), minY = Math.min(el.y1, el.y2), maxY = Math.max(el.y1, el.y2);
                 return x >= minX - 6 && x <= maxX + 6 && y >= minY - 6 && y <= maxY + 6;
-            case 'path': // approximate by checking points
+            case 'path':
                 if (!el.points || !el.points.length) return false;
                 for (let p of el.points) { if (Math.hypot(p.x - x, p.y - y) < 6) return true; }
                 return false;
