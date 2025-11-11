@@ -1,0 +1,1 @@
+<text>Replace this file with a binary PNG named fixture-1.png for E2E tests. Use an 800x600 placeholder image if needed.</text>
