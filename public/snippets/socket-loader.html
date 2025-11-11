@@ -1,0 +1,21 @@
+<script>
+  // Carga socket.io localmente si está disponible, si no usa CDN.
+  (function loadSocketIo() {
+    function load(src) {
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = src;
+        s.onload = () => resolve();
+        s.onerror = (e) => reject(e);
+        document.head.appendChild(s);
+      });
+    }
+    // Intentar ruta local primero (útil si hay servidor socket.io)
+    load('/socket.io/socket.io.js').catch(async () => {
+      console.warn('socket.io local not found, loading CDN fallback');
+      // Reemplaza la versión por la que use tu servidor de socket.io (mismatched versions break)
+      await load('https://cdn.socket.io/4.6.1/socket.io.min.js');
+      console.info('socket.io loaded from CDN');
+    });
+  })();
+</script>
