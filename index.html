@@ -731,25 +731,19 @@
 
         </div>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="public/init-core.js"></script>
-    <script src="public/enhanced-tools-simple.js"></script>
-    <script src="public/init-complete.js"></script>
-    <script src="public/analytics.js"></script>
-    <script src="public/export-engine.js"></script>
-    <script src="public/plugins.js"></script>
-    <script src="public/prototype-mode.js"></script>
-    <script src="public/interactive-elements.js"></script>
-    <!-- socket loader (fallback CDN) -->
-<script>/* socket-loader snippet */</script>
+   <!-- socket loader (intenta local, luego CDN) -->
+<script src="public/socket-loader.js" defer></script>
 
-<!-- Analytics (debe inicializar global Analytics) -->
+<!-- stub/guards que previenen redeclaraciones y no-op para globals -->
+<script src="public/guards.js" defer></script>
+
+<!-- Analytics (debe inicializar global DesignAnalytics) -->
 <script src="public/analytics.js" defer></script>
 
 <!-- Core -->
 <script src="public/init-core.js" defer></script>
 
-<!-- Enhanced tools: cargar solo si existen o lazy-load -->
+<!-- Enhanced tools: prefer lazy-load desde init-core o loadPremiumFeature -->
 <script src="public/enhanced-tools-simple.js" defer></script>
 
 <!-- Init final -->
