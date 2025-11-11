@@ -152,7 +152,7 @@
         }
 
         openIconLibrary() {
-            // Simple stub: show an alert or add a placeholder icon
+            // Simple stub: insert a colored square as an "icon"
             if (!this.app) return;
             const timestamp = Date.now();
             const icon = {
@@ -167,6 +167,8 @@
                 borderRadius: 8
             };
             this.app.elements.push(icon);
+            this.app.selectedElement = icon;
+            if (typeof this.app.updateLayersPanel === 'function') this.app.updateLayersPanel();
             if (typeof this.app.render === 'function') this.app.render();
             if (typeof this.app.showNotification === 'function') this.app.showNotification('🔠 Icono insertado (fallback)');
         }
@@ -196,9 +198,8 @@
 
         exportFrameAsHTML(frame) {
             try {
-                // very simple HTML exporter for a single frame (best-effort)
                 const target = frame || this.currentFrame || (this.app && this.app.selectedElement);
-                const elems = this.app && this.app.elements ? this.app.elements.filter(e => e.type !== 'text' || true) : [];
+                const elems = this.app && this.app.elements ? this.app.elements : [];
                 let body = '';
                 elems.forEach(e => {
                     if (!target || (e.x >= (target.x || 0) && e.y >= (target.y || 0) &&
